@@ -47,7 +47,6 @@ tokens =(
     "ELSE",
     "LBRACKET", # LISTS
     "RBRACKET", # LISTS
-    "INDEX", # LISTS
     "DOT" # LISTS
 )
 
@@ -84,7 +83,6 @@ t_ELSE = r'else'
 
 t_LBRACKET = r'\['
 t_RBRACKET = r'\]'
-t_INDEX = r'\[\d+\]'
 t_DOT = r'\.'
 #---------- Symbol table ------------------------------
 symbol_table = dict()
@@ -279,10 +277,18 @@ def p_elements(p):
 
 def p_list_index(p):
     '''
-    expression : expression INDEX
+    expression : expression LBRACKET index RBRACKET
     '''
-    index = int(p[2][1:-1]) # Get the index from the index token.
-    p[0] = p[1][index] # Return the value at the specified index.
+    node = add_node({"type":"INDEX", "label":"INDEX", "value":""})
+    parseGraph.add_edge(node["counter"], p[1]["counter"])
+    parseGraph.add_edge(node["counter"], p[3]["counter"])
+    p[0] = node
+
+def p_index(p):
+    '''
+    index : NUMBER
+    '''
+    p[0] = add_node({"type":"NUMBER", "label":f"[{p[1]}]", "value":p[1]})
 
 def p_list_append(p):
     '''
@@ -704,8 +710,7 @@ def visit_node(tree, node_id, from_id):
         return res[0:]
     
     if current_node["type"] == "INDEX":
-        index = int(res[0])
-        return res[1][index]
+        return res[0][res[1]]
     
     if current_node["type"] == "APPEND":
         res[0].append(res[1])

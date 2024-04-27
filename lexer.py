@@ -305,6 +305,15 @@ def p_append(p):
     '''
     p[0] = p[3] # Return the value to be appended to the list.
 
+def p_index_assign(p):
+    '''
+    expression : expression LBRACKET index RBRACKET SETTO expression
+    '''
+    node = add_node({"type":"INDEX_ASSIGN", "label":"INDEX_ASSIGN", "value":""})
+    parseGraph.add_edge(node["counter"], p[1]["counter"])
+    parseGraph.add_edge(node["counter"], p[3]["counter"])
+    parseGraph.add_edge(node["counter"], p[6]["counter"])
+    p[0] = node
 
 #---------- Assignment expression -------------------------
 def p_assignment_expression(p):

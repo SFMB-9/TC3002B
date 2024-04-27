@@ -1,0 +1,6 @@
+# ignore Python bytecode cache
+__pycache__/
+
+# ignore parser output files
+parser.out
+parsetab.py

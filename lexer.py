@@ -267,13 +267,20 @@ def p_list_literal(p):
 
 def p_elements(p):
     '''
-    elements : elements COMMA expression
-             | expression
+    elements : elements COMMA element
+             | element
     '''
     if len(p) > 2:
         p[0] = p[1] + [p[3]] # Add the expression to the list of elements.
     else:
         p[0] = [p[1]] # Create a new list with the expression as the first element.
+
+def p_element(p):
+    '''
+    element : expression
+            | list
+    '''
+    p[0] = p[1]
 
 def p_list_index(p):
     '''
@@ -721,6 +728,9 @@ def visit_node(tree, node_id, from_id):
     if current_node["type"] == "INDEX":
         return res[0][res[1]]
     
+    if current_node["type"] == "INDEX_ASSIGN":
+        res[0][res[1]] = res[2]
+        return res[0]
     if current_node["type"] == "APPEND":
         res[0].append(res[1])
         return res[0]

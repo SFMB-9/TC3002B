@@ -20,7 +20,6 @@ def search_cv2(function_name):
         return getattr(cv2, function_name)
     except Exception as e:
         return "AttributeError: module 'cv2' has no attribute", e
-    return None
 
 def gen_matrix(a, b, *args):
     s = np.array(args)

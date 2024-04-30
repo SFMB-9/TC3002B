@@ -4,9 +4,10 @@ import networkx as nx
 from networkx.drawing.nx_pydot import graphviz_layout
 import matplotlib.pyplot as plt
 from library import *
+
 # ---------- Graph variables --------------------------
-parseGraph = None
 draw = True
+parseGraph = None
 NODE_COUNTER = 0
 
 #---------- Description -------------------------------
@@ -284,12 +285,18 @@ def p_element(p):
 
 def p_list_index(p):
     '''
-    expression : expression LBRACKET index RBRACKET
+    expression : VARIABLE LBRACKET index RBRACKET
     '''
-    node = add_node({"type":"INDEX", "label":"INDEX", "value":""})
-    parseGraph.add_edge(node["counter"], p[1]["counter"])
+    node = add_node({"type":"INDEX", "label":"[]", "value":""})
+    parseGraph.add_edge(node["counter"], add_node({"type":"VARIABLE", "label":f"VAR_{p[1]}", "value":p[1]})["counter"])
     parseGraph.add_edge(node["counter"], p[3]["counter"])
     p[0] = node
+
+def p_index_expression(p):
+    '''
+    index_expression : index
+    '''
+    p[0] = p[1]
 
 def p_index(p):
     '''
@@ -297,9 +304,16 @@ def p_index(p):
     '''
     p[0] = add_node({"type":"NUMBER", "label":f"[{p[1]}]", "value":p[1]})
 
+def p_index_slice(p):
+    '''
+    index_slice : NUMBER CASE NUMBER
+    '''
+    p[0] = add_node({"type":"SLICE", "label":f"[{p[1]}:{p[3]}]", "value":(p[1], p[3])})
+
+
 def p_list_append(p):
     '''
-    expression : expression DOT append
+    expression : VARIABLE DOT append
     '''
     node = add_node({"type":"APPEND", "label":"append", "value":""})
     parseGraph.add_edge(node["counter"], p[1]["counter"])
@@ -554,8 +568,7 @@ def p_expression_else(p):
     p[0] = node
 
 #---------- parse tree ---------------------------------
-def exexute_parse_tree(tree):
-    root = tree.nodes[0]
+def execute_parse_tree(tree):
     root_id = 0
     res = visit_node(tree, root_id, -1)
     if(type(res)== int or type(res) == float):
@@ -594,8 +607,11 @@ def visit_node(tree, node_id, from_id):
         return res[0] + res[1] # Return the sum of the two children nodes.
     
     if current_node["type"] == "VARIABLE":
-        return symbol_table[current_node["value"]] # Return the value of the variable from the symbol table.
-    
+        try:
+            return symbol_table[current_node["value"]] # Return the value of the variable from the symbol table.
+        except:
+            print(f"Error: Variable {current_node['value']} not found")
+            return "Error"
     if current_node["type"] == "MINUS":
         return res[0] - res[1] # Return the difference of the two children nodes.
     
@@ -738,40 +754,45 @@ def visit_node(tree, node_id, from_id):
     return "Error"
 #---------- Error handling ------------------------------
 def p_error(p):
-    print("Syntax error on input ", p)
-
+    print("Syntax error on input: ", p)
 
 #---------- Building the parser ------------------------
 parser = yacc.yacc()
 #---------- Testing the lexer -------------------------
 
-while True:
-    try:
-        data = input("> ")
-        if(data == "exit"):
+NODE_COUNTER = 0 # Reset the node counter.
+parseGraph = nx.Graph() # Create a new graph for the parse tree.
+
+if __name__ == "__main__":
+    while True:
+        try:
+            data = input("> ")
+            if(data == "exit"):
+                break
+            if(data == "symbols"):
+                print(symbol_table)
+                continue
+
+            
+        except EOFError:
             break
-        if(data == "symbols"):
-            print(symbol_table)
-            continue
-
-        
-    except EOFError:
-        break
     
-    if not data: continue
-    NODE_COUNTER = 0 # Reset the node counter.
-    parseGraph = nx.Graph() # Create a new graph for the parse tree.
-    root = add_node({"type":"ROOT", "label":"ROOT"}) # Add the root node to the parse tree.
-    result = parser.parse(data) # Parse the input data.
-    parseGraph.add_edge(root["counter"], result["counter"]) # Add an edge from the root node to the result node.
-    labels = nx.get_node_attributes(parseGraph, 'label') # Get the labels of the nodes in the parse tree.
-    if (draw):
+        if not data: continue
         
-        # pos = graphviz_layout(parseGraph, prog="dot")  # commented out if on MacOs (not supported)
-        nx.draw(parseGraph,labels=labels, with_labels=True, font_weight='bold') # pos=pos)
-        plt.show()
+        parseGraph = nx.Graph()
+        NODE_COUNTER = 0
+        root = add_node({"type":"ROOT", "label":"ROOT"}) # Add the root node to the parse tree.
+        result = parser.parse(data) # Parse the input data.
+        parseGraph.add_edge(root["counter"], result["counter"]) # Add an edge from the root node to the result node.
+        labels = nx.get_node_attributes(parseGraph, 'label') # Get the labels of the nodes in the parse tree.
+        if (draw):
+            
+            # pos = graphviz_layout(parseGraph, prog="dot")  # commented out if on MacOs (not supported)
+            nx.draw(parseGraph,labels=labels, with_labels=True, font_weight='bold') # pos=pos)
+            plt.show()
 
-    exexute_parse_tree(parseGraph)
+        execute_parse_tree(parseGraph)
 
+    print("Finished, accepted input.")
 
-print("Finished, accepted input.")
+    

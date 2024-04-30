@@ -25,8 +25,8 @@ Upon execution, two additional files will be generated in the directory: parseta
 TC3002B/
 │
 ├── examples/
-│   ├── beta.lyx
-│   └── sum.lyx
+│   └── test.lex
+├── lex_runner.py
 ├── lexer.py
 ├── library.py
 └── Rules.md

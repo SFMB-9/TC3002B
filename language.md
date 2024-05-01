@@ -1,4 +1,5 @@
-# Rules
+# Language definition
+## Rules
 ```BNF
 <assignment> ::= VARIABLE SETTO <expression>
                | VARIABLE SETTO <list>
@@ -67,3 +68,16 @@
           | NUMBER CASE NUMBER
 
 ```
+## Functions
+Descripción de las funciones implementadas como herramientas y accesorios a la gramática
+## Demonstration
+Demostración de una o varias expresiones y el árbol de sintaxis abstracto demostrando
+  Precedencia de operadores
+  Llamadas a funciones
+  Asignación de variables
+  Implementación de flujos de imágenes
+  Aplicación de filtros de Open CV
+  Cada una de las nuevas características implementadas
+
+## Personal Conclusions
+Vínculos a videos de reflexión de cada participante. Deberán ser privados y solo permitir el acceso a jose.c.mondragon@gmail.com

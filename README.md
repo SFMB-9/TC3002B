@@ -20,7 +20,9 @@ Once dependencies are installed, run the PLY parser by executing the main script
 ```cmd
 python lexer.py
 ```
-Upon execution, two additional files will be generated in the directory: parsetab.py and parser.out (explanation).
+Upon execution, two additional files will be generated in the directory: `parsetab.py` and `parser.out`, parsetab.py contains additional dependencies for executing the parser, whilst parser.out will show the infered rules from the lexer script.
+
+You can additionally run files through the lexer with the `.lex` file extension. Run the `lex_runner.py` script to select one of the example files. You can also run your own files by adding them to the `examples` directory.
 ## Folder Structure
 ```lua
 TC3002B/
@@ -29,16 +31,17 @@ TC3002B/
 │   ├── conditions.lex
 │   ├── conditions2.lex
 │   └── test.lex
+├── language.md
 ├── lex_runner.py
 ├── lexer.py
-├── library.py
-└── Rules.md
+└── library.py
 ```
 - __lexer.py__: Main script for the PLY Lexer/Parser
 - __library.py__: Contains supporting functions and utilities.
-- __examples/__: Directory containing sample input files for the parser.
-- __Rules.md__: File detailing grammar rules and language specifications.
+- __lex_runner.py__: Script to load example files with the lexer.
+- __examples/__: Directory containing sample input files for the lexer.
+- __language.md__: File detailing language definition and demonstration. [[Link](language.md)]
 
-> Avoid modifying, running or deleting the `library.py` or the generated `parsetab.py` file as they have crucial functions and utilities for the lexer.
+> Avoid modifying or deleting the `library.py` or the generated `parsetab.py` file as they have crucial functions and utilities for the lexer.
 ## References
 [Evidencia Final Compiladores: Desarrollo de herramienta de soporte al proceso de análisis de imágenes](https://experiencia21.tec.mx/courses/481674/assignments/15414235=)

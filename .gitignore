@@ -4,3 +4,6 @@ __pycache__/
 # ignore parser output files
 parser.out
 parsetab.py
+
+# ignore generated helper files
+tempCodeRunnerFile.py

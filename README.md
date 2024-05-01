@@ -7,6 +7,7 @@ The use of translators aids in __automating and simplifying tasks__ for programm
 
 ## Prerequisites
 - Make sure to have a __Python 3.11__ or later environment installed.
+- You will need to have the __Graphviz__ Software installed. Follow download instructions [here](https://graphviz.org/).
   
 ## Setup
 Navigate to the root of the cloned repository and run the following command to install dependencies:

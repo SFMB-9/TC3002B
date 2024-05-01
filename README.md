@@ -23,7 +23,7 @@ python lexer.py
 Upon execution, two additional files will be generated in the directory: `parsetab.py` and `parser.out`, parsetab.py contains additional dependencies for executing the parser, whilst parser.out will show the infered rules from the lexer script.
 
 You can additionally run files through the lexer with the `.lex` file extension. Run the `lex_runner.py` script to select one of the example files. You can also run your own files by adding them to the `examples` directory.
-## Folder Structure
+## Project Structure
 ```lua
 TC3002B/
 │

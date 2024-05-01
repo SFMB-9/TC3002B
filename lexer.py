@@ -99,6 +99,11 @@ def printP2(num):
 def add_node(attr):
     global parseGraph # Parse Graph is a global variable that is used to store the nodes and edges of the parse tree, it is a networkx graph.
     global NODE_COUNTER # Node counter is a global variable that is used to assign a unique identifier to each node in the parse tree.
+    
+    label = attr["label"]
+    if isinstance(label, str):
+        label = f'"{label}"'
+    
     attr["counter"] = NODE_COUNTER # Assign the current value of the node counter to the node.
     parseGraph.add_node(NODE_COUNTER, **attr) # Add the node to the parse graph.
     NODE_COUNTER += 1 # Increment the node counter.
@@ -261,7 +266,7 @@ def p_list_literal(p):
     '''
     list : LBRACKET elements RBRACKET
     '''
-    node = add_node({"type":"LIST", "label":"[]", "value":p[2]})
+    node = add_node({"type":"LIST", "label":"[]", "value":[]})
     for n in p[2]:
         parseGraph.add_edge(node["counter"], n["counter"])
     p[0] = node
@@ -304,11 +309,11 @@ def p_index(p):
     '''
     p[0] = add_node({"type":"NUMBER", "label":f"[{p[1]}]", "value":p[1]})
 
-def p_index_slice(p):
-    '''
-    index_slice : NUMBER CASE NUMBER
-    '''
-    p[0] = add_node({"type":"SLICE", "label":f"[{p[1]}:{p[3]}]", "value":(p[1], p[3])})
+# def p_index_slice(p):
+#     '''
+#     index_slice : NUMBER CASE NUMBER
+#     '''
+#     p[0] = add_node({"type":"SLICE", "label":f"[{p[1]}:{p[3]}]", "value":(p[1], p[3])})
 
 
 def p_list_append(p):
@@ -535,7 +540,7 @@ def p_expression_ternary(p):
     '''
     expression : LPAREN expression RPAREN TERNARY expression CASE expression
     '''
-    node = add_node({"type": "TERNARY", "label": "?:", "value": ""})
+    node = add_node({"type": "TERNARY", "label": "?", "value": ""})
     parseGraph.add_edge(node["counter"], p[2]["counter"])  # Condition
     parseGraph.add_edge(node["counter"], p[5]["counter"])  # True branch
     parseGraph.add_edge(node["counter"], p[7]["counter"])  # False branch
@@ -787,12 +792,10 @@ if __name__ == "__main__":
         labels = nx.get_node_attributes(parseGraph, 'label') # Get the labels of the nodes in the parse tree.
         if (draw):
             
-            # pos = graphviz_layout(parseGraph, prog="dot")  # commented out if on MacOs (not supported)
-            nx.draw(parseGraph,labels=labels, with_labels=True, font_weight='bold') # pos=pos)
+            pos = graphviz_layout(parseGraph, prog="dot")  # commented out if on MacOs (not supported)
+            nx.draw(parseGraph,labels=labels, with_labels=True, font_weight='bold', pos=pos)
             plt.show()
 
         execute_parse_tree(parseGraph)
 
     print("Finished, accepted input.")
-
-    

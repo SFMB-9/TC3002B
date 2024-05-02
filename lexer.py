@@ -48,7 +48,8 @@ tokens =(
     "ELSE",
     "LBRACKET", # LISTS
     "RBRACKET", # LISTS
-    "DOT" # LISTS
+    "APPEND",
+    "POP"
 )
 
 #---------- Regular expressions -----------------------
@@ -84,7 +85,8 @@ t_ELSE = r'else'
 
 t_LBRACKET = r'\['
 t_RBRACKET = r'\]'
-t_DOT = r'\.'
+t_APPEND = r'.append'
+t_POP = r'.pop'
 #---------- Symbol table ------------------------------
 symbol_table = dict()
 
@@ -297,39 +299,40 @@ def p_list_index(p):
     parseGraph.add_edge(node["counter"], p[3]["counter"])
     p[0] = node
 
-def p_index_expression(p):
+
+def p_list_slice(p):
     '''
-    index_expression : index
+    expression : VARIABLE LBRACKET index CASE index RBRACKET
     '''
-    p[0] = p[1]
+    node = add_node({"type":"SLICE", "label":f"[{p[3]['value']}:{p[5]['value']}]", "value":""})
+    parseGraph.add_edge(node["counter"], add_node({"type":"VARIABLE", "label":f"VAR_{p[1]}", "value":p[1]})["counter"])
+    parseGraph.add_edge(node["counter"], p[3]["counter"])
+    parseGraph.add_edge(node["counter"], p[5]["counter"])
+    p[0] = node
+
+def p_list_slice_x(p):
+    '''
+    expression : VARIABLE LBRACKET index CASE RBRACKET
+    '''
+    node = add_node({"type":"SLICEX", "label":f"[{p[3]['value']}:]", "value":""})
+    parseGraph.add_edge(node["counter"], add_node({"type":"VARIABLE", "label":f"VAR_{p[1]}", "value":p[1]})["counter"])
+    parseGraph.add_edge(node["counter"], p[3]["counter"])
+    p[0] = node
+
+def p_list_x_slice(p):
+    '''
+    expression : VARIABLE LBRACKET CASE index RBRACKET
+    '''
+    node = add_node({"type":"XSLICE", "label":f"[:{p[4]['value']}]", "value":""})
+    parseGraph.add_edge(node["counter"], add_node({"type":"VARIABLE", "label":f"VAR_{p[1]}", "value":p[1]})["counter"])
+    parseGraph.add_edge(node["counter"], p[4]["counter"])
+    p[0] = node
 
 def p_index(p):
     '''
     index : NUMBER
     '''
-    p[0] = add_node({"type":"NUMBER", "label":f"[{p[1]}]", "value":p[1]})
-
-# def p_index_slice(p):
-#     '''
-#     index_slice : NUMBER CASE NUMBER
-#     '''
-#     p[0] = add_node({"type":"SLICE", "label":f"[{p[1]}:{p[3]}]", "value":(p[1], p[3])})
-
-
-def p_list_append(p):
-    '''
-    expression : VARIABLE DOT append
-    '''
-    node = add_node({"type":"APPEND", "label":"append", "value":""})
-    parseGraph.add_edge(node["counter"], p[1]["counter"])
-    parseGraph.add_edge(node["counter"], p[3]["counter"])
-    p[0] = node
-
-def p_append(p):
-    '''
-    append : VARIABLE LPAREN expression RPAREN
-    '''
-    p[0] = p[3] # Return the value to be appended to the list.
+    p[0] = add_node({"type":"NUMBER", "label":f"NUM_{p[1]}", "value":p[1]})
 
 def p_index_assign(p):
     '''
@@ -339,6 +342,55 @@ def p_index_assign(p):
     parseGraph.add_edge(node["counter"], p[1]["counter"])
     parseGraph.add_edge(node["counter"], p[3]["counter"])
     parseGraph.add_edge(node["counter"], p[6]["counter"])
+    p[0] = node
+
+def p_slice_assign(p):
+    '''
+    expression : expression LBRACKET index CASE index RBRACKET SETTO expression
+    '''
+    node = add_node({"type":"SLICE_ASSIGN", "label":"SLICE_ASSIGN", "value":""})
+    parseGraph.add_edge(node["counter"], p[1]["counter"])
+    parseGraph.add_edge(node["counter"], p[3]["counter"])
+    parseGraph.add_edge(node["counter"], p[5]["counter"])
+    parseGraph.add_edge(node["counter"], p[8]["counter"])
+    p[0] = node
+
+def p_slice_x_assign(p):
+    '''
+    expression : expression LBRACKET index CASE RBRACKET SETTO expression
+    '''
+    node = add_node({"type":"SLICEX_ASSIGN", "label":"SLICEX_ASSIGN", "value":""})
+    parseGraph.add_edge(node["counter"], p[1]["counter"])
+    parseGraph.add_edge(node["counter"], p[3]["counter"])
+    parseGraph.add_edge(node["counter"], p[7]["counter"])
+    p[0] = node
+
+def p_x_slice_assign(p):
+    '''
+    expression : expression LBRACKET CASE index RBRACKET SETTO expression
+    '''
+    node = add_node({"type":"XSLICE_ASSIGN", "label":"XSLICE_ASSIGN", "value":""})
+    parseGraph.add_edge(node["counter"], p[1]["counter"])
+    parseGraph.add_edge(node["counter"], p[4]["counter"])
+    parseGraph.add_edge(node["counter"], p[7]["counter"])
+    p[0] = node
+
+def p_list_append(p):
+    '''
+    expression : VARIABLE APPEND LPAREN expression RPAREN
+    '''
+    node = add_node({"type":"APPEND", "label":"append", "value":""})
+    print("HERE *** ", p[1])
+    parseGraph.add_edge(node["counter"], add_node({"type":"VARIABLE", "label":f"VAR_{p[1]}", "value":p[1]})["counter"])
+    parseGraph.add_edge(node["counter"], p[4]["counter"])
+    p[0] = node
+
+def p_list_pop(p):
+    '''
+    expression : VARIABLE POP LPAREN RPAREN
+    '''
+    node = add_node({"type":"POP", "label":"pop", "value":""})
+    parseGraph.add_edge(node["counter"], add_node({"type":"VARIABLE", "label":f"VAR_{p[1]}", "value":p[1]})["counter"])
     p[0] = node
 
 #---------- Assignment expression -------------------------
@@ -749,12 +801,38 @@ def visit_node(tree, node_id, from_id):
     if current_node["type"] == "INDEX":
         return res[0][res[1]]
     
+    if current_node["type"] == "SLICE":
+        return res[0][res[1]:res[2]]
+    
+    if current_node["type"] == "SLICEX":
+        return res[0][res[1]:]
+    
+    if current_node["type"] == "XSLICE":
+        return res[0][:res[1]]
+    
     if current_node["type"] == "INDEX_ASSIGN":
         res[0][res[1]] = res[2]
         return res[0]
+    
+    if current_node["type"] == "SLICE_ASSIGN":
+        res[0][res[1]:res[2]] = res[3]
+        return res[0]
+    
+    if current_node["type"] == "SLICEX_ASSIGN":
+        res[0][res[1]:] = res[2]
+        return res[0]
+    
+    if current_node["type"] == "XSLICE_ASSIGN":
+        res[0][:res[1]] = res[2]
+        return res[0]
+    
     if current_node["type"] == "APPEND":
         res[0].append(res[1])
         return res[0]
+    
+    if current_node["type"] == "POP":
+        x = res[0].pop()
+        return x
     
     return "Error"
 #---------- Error handling ------------------------------
@@ -792,8 +870,11 @@ if __name__ == "__main__":
         labels = nx.get_node_attributes(parseGraph, 'label') # Get the labels of the nodes in the parse tree.
         if (draw):
             
-            pos = graphviz_layout(parseGraph, prog="dot")  # commented out if on MacOs (not supported)
-            nx.draw(parseGraph,labels=labels, with_labels=True, font_weight='bold', pos=pos)
+            try:
+                pos = graphviz_layout(parseGraph, prog="dot")  # commented out if on MacOs (not supported)
+                nx.draw(parseGraph,labels=labels, with_labels=True, font_weight='bold', pos=pos)
+            except:
+                nx.draw(parseGraph,labels=labels, with_labels=True, font_weight='bold')
             plt.show()
 
         execute_parse_tree(parseGraph)

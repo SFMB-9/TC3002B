@@ -142,7 +142,7 @@ In this section, each use case showcases how the lexer and associated functional
   ```bash
   phi = 1.61803398875
   ```
-  ![demonstrations/img_2.png](demonstrations/image.png)
+  ![demonstrations/img_2.png](demonstrations/image-13.png)
   ```bash
   phi
 

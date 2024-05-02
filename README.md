@@ -7,7 +7,7 @@ The use of translators aids in __automating and simplifying tasks__ for programm
 
 ## Prerequisites
 - Make sure to have a __Python 3.11__ or later environment installed.
-- You will need to have the __Graphviz__ Software installed. Follow download instructions [here](https://graphviz.org/).
+- You will need to have the __Graphviz__ Software installed. We highly suggest using choco if available. Follow download instructions [here](https://graphviz.org/).
   
 ## Setup
 Navigate to the root of the cloned repository and run the following command to install dependencies:
@@ -23,6 +23,8 @@ python lexer.py
 Upon execution, two additional files will be generated in the directory: `parsetab.py` and `parser.out`, parsetab.py contains additional dependencies for executing the parser, whilst parser.out will show the infered rules from the lexer script.
 
 You can additionally run files through the lexer with the `.lex` file extension. Run the `lex_runner.py` script to select one of the example files. You can also run your own files by adding them to the `examples` directory.
+
+For more information, please refer to [language.md](language.md).
 ## Project Structure
 ```lua
 TC3002B/
@@ -31,6 +33,7 @@ TC3002B/
 │   ├── conditions.lex
 │   ├── conditions2.lex
 │   └── test.lex
+├── images/
 ├── language.md
 ├── lex_runner.py
 ├── lexer.py
@@ -40,7 +43,8 @@ TC3002B/
 - __library.py__: Contains supporting functions and utilities.
 - __lex_runner.py__: Script to load example files with the lexer.
 - __examples/__: Directory containing sample input files for the lexer.
-- __language.md__: File detailing language definition and demonstration. [[Link](language.md)]
+- __images/__: Sample images for testing OpenCV functions.
+- __language.md__: File detailing language definition and demonstrations. [[Link](language.md)]
 
 > Avoid modifying or deleting the `library.py` or the generated `parsetab.py` file as they have crucial functions and utilities for the lexer.
 ## References

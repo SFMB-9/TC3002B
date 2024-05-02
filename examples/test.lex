@@ -1,4 +1,1 @@
-a = [1,2,3]
-a
-a[0] = 7
-a
+a = load_image("images/test.jpg")

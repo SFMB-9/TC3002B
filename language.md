@@ -310,5 +310,8 @@ In this section, each use case showcases how the lexer and associated functional
     Illustrates nested conditional operations to determine a specific value based on today's value.
 
 ## Personal Conclusions
-Vínculos a videos de reflexión de cada participante. Deberán ser privados y solo permitir el acceso a jose.c.mondragon@gmail.com
-https://drive.google.com/file/d/1-7tarHCk4NKKEC1Y3aI3TBgP_hxFWChY/view?usp=drive_link
+Vínculos a videos de reflexión:
+
+1. [Andrés Briseño Celada](https://drive.google.com/file/d/1-7tarHCk4NKKEC1Y3aI3TBgP_hxFWChY/view?usp=drive_link)
+2. [Salvador F. Milanés Braniff](https://drive.google.com/file/d/1cYhFbSsmU2EpIAllMmSR-IZ7XbuBM2tx/view?usp=sharing)
+3. [Juan Muniain Otero]()

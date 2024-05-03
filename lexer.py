@@ -43,9 +43,6 @@ tokens =(
     "NOT",
     "TERNARY",
     "CASE",
-    "IF",
-    "ELIF",
-    "ELSE",
     "LBRACKET", # LISTS
     "RBRACKET", # LISTS
     "APPEND",
@@ -78,10 +75,6 @@ t_NOT = r'!'
 
 t_TERNARY = r'\?'
 t_CASE = r':'
-
-t_IF = r'if'
-t_ELIF = r'elif'
-t_ELSE = r'else'
 
 t_LBRACKET = r'\['
 t_RBRACKET = r'\]'
@@ -598,32 +591,6 @@ def p_expression_ternary(p):
     parseGraph.add_edge(node["counter"], p[7]["counter"])  # False branch
     p[0] = node
 
-def p_expression_if(p):
-    '''
-    expression : IF LPAREN expression RPAREN CASE expression
-    '''
-    node = add_node({"type": "IF", "label": "IF", "value": ""})
-    parseGraph.add_edge(node["counter"], p[3]["counter"])  # Condition
-    parseGraph.add_edge(node["counter"], p[6]["counter"])  # True branch
-    p[0] = node
-
-def p_expression_elif(p):
-    '''
-    expression : ELIF LPAREN expression RPAREN CASE expression
-    '''
-    node = add_node({"type": "ELIF", "label": "ELIF", "value": ""})
-    parseGraph.add_edge(node["counter"], p[3]["counter"])  # Condition
-    parseGraph.add_edge(node["counter"], p[6]["counter"])  # True branch
-    p[0] = node
-
-def p_expression_else(p):
-    '''
-    expression : ELSE CASE expression
-    '''
-    node = add_node({"type": "ELSE", "label": "ELSE", "value": ""})
-    parseGraph.add_edge(node["counter"], p[3]["counter"])  # True branch
-    p[0] = node
-
 #---------- parse tree ---------------------------------
 def execute_parse_tree(tree):
     root_id = 0
@@ -776,21 +743,6 @@ def visit_node(tree, node_id, from_id):
             return res[1]
         else:
             return res[2]
-    
-    # if current_node["type"] == "IF":
-    #     if res[0]:
-    #         return res[1]
-    #     else:
-    #         return "Error"
-    #     
-    # if current_node["type"] == "ELIF":
-    #     if res[0]:
-    #         return res[1]
-    #     else:
-    #         return "Error"
-    #     
-    # if current_node["type"] == "ELSE":
-    #     return res[0]
 
     if current_node["type"] == "EMPTY_LIST":
         return []

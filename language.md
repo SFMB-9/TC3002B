@@ -311,3 +311,4 @@ In this section, each use case showcases how the lexer and associated functional
 
 ## Personal Conclusions
 Vínculos a videos de reflexión de cada participante. Deberán ser privados y solo permitir el acceso a jose.c.mondragon@gmail.com
+https://drive.google.com/file/d/1-7tarHCk4NKKEC1Y3aI3TBgP_hxFWChY/view?usp=drive_link
